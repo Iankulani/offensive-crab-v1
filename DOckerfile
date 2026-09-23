@@ -1,0 +1,154 @@
+# =====================
+# OFFENSIVE-CRAB-V1 - Dockerfile
+# Author: Ian Carter Kulani, MSc
+# Version: 1.0.0
+# =====================
+
+# Multi-stage build for smaller image
+FROM python:3.11-slim-bookworm AS builder
+
+LABEL maintainer="Ian Carter Kulani <ian.kulani@offensive-crab.dev>"
+LABEL version="1.0.0"
+LABEL description="OFFENSIVE-CRAB-V1 - Ultimate Cybersecurity Command & Control Platform"
+
+# Set environment
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    DEBIAN_FRONTEND=noninteractive
+
+# Install build dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    gcc \
+    g++ \
+    libssl-dev \
+    libffi-dev \
+    python3-dev \
+    libpcap-dev \
+    libnetfilter-queue-dev \
+    libxml2-dev \
+    libxslt1-dev \
+    zlib1g-dev \
+    libjpeg-dev \
+    libpng-dev \
+    libfreetype6-dev \
+    pkg-config \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create virtual environment
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Install Python dependencies
+COPY requirements.txt /tmp/requirements.txt
+RUN pip install --upgrade pip setuptools wheel && \
+    pip install -r /tmp/requirements.txt && \
+    rm /tmp/requirements.txt
+
+# =====================
+# Final stage
+# =====================
+FROM python:3.11-slim-bookworm AS runtime
+
+LABEL maintainer="Ian Carter Kulani <ian.kulani@offensive-crab.dev>"
+LABEL version="1.0.0"
+LABEL description="OFFENSIVE-CRAB-V1 - Ultimate Cybersecurity Command & Control Platform"
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PATH="/opt/venv/bin:$PATH" \
+    OFFENSIVE_CRAB_HOME="/app" \
+    OFFENSIVE_CRAB_CONFIG="/config"
+
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    # Networking tools
+    iputils-ping \
+    net-tools \
+    dnsutils \
+    traceroute \
+    mtr-tiny \
+    netcat-openbsd \
+    nmap \
+    whois \
+    curl \
+    wget \
+    openssh-client \
+    tcpdump \
+    arp-scan \
+    macchanger \
+    # Security tools
+    nikto \
+    hashcat \
+    john \
+    hydra \
+    sqlmap \
+    # Firewall
+    iptables \
+    iproute2 \
+    # System tools
+    procps \
+    htop \
+    vim \
+    nano \
+    less \
+    tree \
+    file \
+    # Python runtime deps
+    libpcap0.8 \
+    libnetfilter-queue1 \
+    libxml2 \
+    libxslt1.1 \
+    libjpeg62-turbo \
+    libpng16-16 \
+    libfreetype6 \
+    # Timezone
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy virtual environment from builder
+COPY --from=builder /opt/venv /opt/venv
+
+# Create app directory
+WORKDIR /app
+
+# Create non-root user (optional, for security)
+RUN useradd -m -s /bin/bash -u 1000 crab && \
+    mkdir -p /config /data && \
+    chown -R crab:crab /app /config /data
+
+# Copy application files
+COPY --chown=crab:crab offensive_crab_v1.py /app/
+COPY --chown=crab:crab requirements.txt /app/
+COPY --chown=crab:crab requirements-check.py /app/
+COPY --chown=crab:crab healthcheck.py /app/
+COPY --chown=crab:crab setup.py /app/
+COPY --chown=crab:crab README.md /app/ 2>/dev/null || true
+COPY --chown=crab:crab LICENSE /app/ 2>/dev/null || true
+
+# Copy and setup entrypoint
+COPY --chown=crab:crab docker-entrypoint.sh /app/
+RUN chmod +x /app/docker-entrypoint.sh
+
+# Create directories for data
+RUN mkdir -p /config/payloads /config/reports /config/scans /config/logs && \
+    chown -R crab:crab /config
+
+# Expose ports
+EXPOSE 5000 8080 4444 5555 8081
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD python /app/healthcheck.py || exit 1
+
+# Switch to non-root user
+# Note: Some features (raw sockets, iptables) require root
+# Use --privileged or specific capabilities when running
+USER crab
+
+# Set entrypoint
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
+CMD ["python", "/app/offensive_crab_v1.py"]

@@ -1,0 +1,80 @@
+# =====================
+# OFFENSIVE-CRAB-V1 Requirements
+# =====================
+# Core Dependencies
+colorama>=0.4.6
+requests>=2.31.0
+psutil>=5.9.0
+urllib3>=2.0.0
+
+# Cryptography
+cryptography>=41.0.0
+
+# SSH & Remote Access
+paramiko>=3.4.0
+scp>=0.14.0
+
+# Networking
+scapy>=2.5.0
+dnspython>=2.4.0
+netifaces>=0.11.0
+whois>=0.9.27
+
+# Web Framework
+flask>=3.0.0
+flask-socketio>=5.3.0
+flask-cors>=4.0.0
+eventlet>=0.35.0
+
+# Platform Integration
+discord.py>=2.3.0
+telethon>=1.34.0
+slack-sdk>=3.26.0
+slack-sdk[socket-mode]>=3.26.0
+google-auth>=2.23.0
+google-auth-oauthlib>=1.1.0
+google-api-python-client>=2.100.0
+
+# Web Automation
+selenium>=4.15.0
+webdriver-manager>=4.0.0
+
+# Keylogger
+pynput>=1.7.6
+
+# Data Visualization
+matplotlib>=3.8.0
+seaborn>=0.13.0
+numpy>=1.26.0
+
+# PDF Generation
+reportlab>=4.0.0
+
+# QR Code
+qrcode>=7.4.2
+pillow>=10.0.0
+
+# URL Shortening
+pyshorteners>=1.0.1
+
+# Web Scraping
+beautifulsoup4>=4.12.0
+lxml>=4.9.0
+
+# Additional Utilities
+pyperclip>=1.8.2
+pygetwindow>=0.0.9
+pyautogui>=0.9.54
+pywhatkit>=5.4
+tabulate>=0.9.0
+termcolor>=2.3.0
+tqdm>=4.66.0
+python-dotenv>=1.0.0
+pydantic>=2.4.0
+aiohttp>=3.9.0
+websockets>=12.0
+pyOpenSSL>=23.3.0
+pycryptodome>=3.19.0
+passlib>=1.7.4
+bcrypt>=4.1.0
+pyjwt>=2.8.0

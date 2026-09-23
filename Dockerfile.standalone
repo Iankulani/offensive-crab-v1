@@ -1,0 +1,162 @@
+# =====================
+# OFFENSIVE-CRAB-V1 - Standalone Dockerfile
+# Author: Ian Carter Kulani, MSc
+# Version: 1.0.0
+#
+# This Dockerfile creates a fully self-contained image
+# that runs OFFENSIVE-CRAB-V1 with all dependencies.
+# =====================
+
+FROM kalilinux/kali-rolling
+
+LABEL maintainer="Ian Carter Kulani <ian.kulani@offensive-crab.dev>"
+LABEL version="1.0.0"
+LABEL description="OFFENSIVE-CRAB-V1 - Ultimate Cybersecurity Command & Control Platform (Standalone)"
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    DEBIAN_FRONTEND=noninteractive \
+    OFFENSIVE_CRAB_HOME="/app" \
+    OFFENSIVE_CRAB_CONFIG="/config"
+
+# Update and install everything
+RUN apt-get update && apt-get upgrade -y && \
+    apt-get install -y --no-install-recommends \
+    # Python
+    python3 \
+    python3-pip \
+    python3-dev \
+    python3-venv \
+    # Build tools
+    build-essential \
+    gcc \
+    g++ \
+    make \
+    cmake \
+    pkg-config \
+    git \
+    # Libraries
+    libssl-dev \
+    libffi-dev \
+    libpcap-dev \
+    libnetfilter-queue-dev \
+    libxml2-dev \
+    libxslt1-dev \
+    zlib1g-dev \
+    libjpeg-dev \
+    libpng-dev \
+    libfreetype6-dev \
+    libsqlite3-dev \
+    # Networking
+    iputils-ping \
+    net-tools \
+    dnsutils \
+    traceroute \
+    mtr-tiny \
+    netcat-traditional \
+    ncat \
+    nmap \
+    whois \
+    curl \
+    wget \
+    openssh-client \
+    openssh-server \
+    tcpdump \
+    arp-scan \
+    macchanger \
+    hping3 \
+    socat \
+    # Security tools
+    nikto \
+    hashcat \
+    john \
+    hydra \
+    sqlmap \
+    metasploit-framework \
+    aircrack-ng \
+    ettercap-text-only \
+    dsniff \
+    slowhttptest \
+    # Firewall
+    iptables \
+    nftables \
+    iproute2 \
+    # System
+    procps \
+    htop \
+    vim \
+    nano \
+    less \
+    tree \
+    file \
+    unzip \
+    zip \
+    tar \
+    gzip \
+    bzip2 \
+    xz-utils \
+    # Utils
+    tmux \
+    screen \
+    jq \
+    tzdata \
+    ca-certificates \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create app directory
+WORKDIR /app
+
+# Create virtual environment
+RUN python3 -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Upgrade pip
+RUN pip install --upgrade pip setuptools wheel
+
+# Copy requirements
+COPY requirements.txt /app/requirements.txt
+
+# Install Python packages
+RUN pip install -r /app/requirements.txt && \
+    pip install pyinstaller
+
+# Copy application
+COPY offensive_crab_v1.py /app/
+COPY requirements-check.py /app/
+COPY healthcheck.py /app/
+COPY setup.py /app/
+COPY README.md /app/ 2>/dev/null || true
+COPY LICENSE /app/ 2>/dev/null || true
+
+# Install as package
+RUN pip install -e /app
+
+# Copy entrypoint
+COPY docker-entrypoint.sh /app/
+RUN chmod +x /app/docker-entrypoint.sh
+
+# Create directories
+RUN mkdir -p /config/payloads /config/reports /config/scans /config/logs /data && \
+    mkdir -p /root/.offensive_crab_v1
+
+# Setup SSH for remote access
+RUN mkdir -p /var/run/sshd && \
+    echo 'root:offensivecrab' | chpasswd && \
+    sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+
+# Expose ports
+EXPOSE 22 5000 8080 4444 5555 8081 9050
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+    CMD python3 /app/healthcheck.py || exit 1
+
+# Volumes
+VOLUME ["/config", "/data"]
+
+# Entrypoint
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
+
+# Default command
+CMD ["python3", "/app/offensive_crab_v1.py"]
