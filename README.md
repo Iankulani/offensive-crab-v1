@@ -1,7 +1,12 @@
 
 # offensive-crab-v1
 
-Offensive crab# Install system dependencies (Debian/Ubuntu)
+<img width="360" height="360" alt="crabx" src="https://github.com/user-attachments/assets/d9e06d13-2043-4596-a27a-286a980f1b92" />
+
+
+Offensive crab
+
+# Install system dependencies (Debian/Ubuntu)
 ```bash
 sudo apt-get update
 sudo apt-get install -y python3 python3-pip python3-venv \
