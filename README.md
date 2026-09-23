@@ -40,19 +40,39 @@ pip install -e .
 python3 offensive_crab_v1.py
 
 ```
+# Windows
+Automated Installation
+Download the repository
 
+Right-click install.bat and select Run as Administrator
 
+Follow the prompts
 
-# How to clone the repo
+Manual Installation
 
-```bash
+# Install Python 3.11+ from https://python.org
 
-git clone https://github.com/Iankulani/offensive-crab-v1.git
+# Clone repository
+git clone https://github.com/iankulani/offensive-crab-v1.git
 cd offensive-crab-v1
+
+# Create virtual environment
+python -m venv venv
+.\venv\Scripts\activate
+
+# Upgrade pip
+python -m pip install --upgrade pip setuptools wheel
+
+# Install dependencies
+```bash
+pip install -r requirements.txt
+```
+           
+# Install the tool
+```bash
+pip install -e .
 ```
 
-# How to run
+# Run
 ```bash
-python3 
-
-
+python offensive_crab_v1.py
