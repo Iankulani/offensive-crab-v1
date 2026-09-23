@@ -2,7 +2,7 @@
 
 Offensive crab
 
-# How to cklone the repo
+# How to clone the repo
 
 ```bash
 
