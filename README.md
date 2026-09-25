@@ -66,8 +66,10 @@ python -m venv venv
 .\venv\Scripts\activate
 
 # Upgrade pip
+```bash
 python -m pip install --upgrade pip setuptools wheel
-
+```
+    
 # Install dependencies
 ```bash
 pip install -r requirements.txt
@@ -79,5 +81,7 @@ pip install -e .
 ```
 
 # Run
+
 ```bash
 python offensive_crab_v1.py
+```
