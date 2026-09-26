@@ -1,8 +1,10 @@
 
 # offensive-crab-v1
 
-<img width="360" height="360" alt="crabx" src="https://github.com/user-attachments/assets/d9e06d13-2043-4596-a27a-286a980f1b92" />
+<div align="center">
 
+<img width="360" height="360" alt="crabx" src="https://github.com/user-attachments/assets/d9e06d13-2043-4596-a27a-286a980f1b92" />
+</div>
 
 Offensive crab
 
