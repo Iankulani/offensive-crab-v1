@@ -61,6 +61,7 @@ Manual Installation
 
 # Clone repository
 git clone https://github.com/iankulani/offensive-crab-v1.git
+
 cd offensive-crab-v1
 
 # Create virtual environment
@@ -87,3 +88,15 @@ pip install -e .
 ```bash
 python offensive_crab_v1.py
 ```
+
+
+# Documentation
+
+# References
+
+
+# Star History
+
+
+
+
